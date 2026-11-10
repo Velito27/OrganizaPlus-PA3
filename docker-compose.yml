@@ -1,0 +1,46 @@
+name: pa3-organiza
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+  backend:
+    build: ./backend
+    depends_on:
+      mongo: {condition: service_healthy}
+    restart: unless-stopped
+    environment:
+      PORT: '4000'
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongo:27017/pa3_tareas
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en el archivo .env de la raiz}
+      JWT_EXPIRES_IN: 1h
+      ALLOWED_ORIGINS: http://localhost:4200,http://localhost:5173
+    ports:
+      - '4000:4000'
+  angular:
+    build:
+      context: ./angular
+      args:
+        ANGULAR_API_URL: http://localhost:4000/api
+        REACT_APP_URL: http://localhost:5173
+    depends_on: [backend]
+    ports: ['4200:80']
+  react:
+    build:
+      context: ./react
+      args:
+        VITE_API_URL: http://localhost:4000/api
+        VITE_ANGULAR_URL: http://localhost:4200
+    depends_on: [backend]
+    ports: ['5173:80']
+volumes:
+  mongo_data:

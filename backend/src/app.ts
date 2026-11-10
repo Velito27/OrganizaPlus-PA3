@@ -1,0 +1,24 @@
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import { rateLimit } from 'express-rate-limit';
+import { allowedOrigins } from './config';
+import auth from './routes/auth';
+import tasks from './routes/tasks';
+import admin from './routes/admin';
+import { errorHandler, notFound } from './middlewares';
+import { HttpError } from './types';
+export const app=express();
+app.disable('x-powered-by');
+app.use(helmet());
+app.use(cors({origin:(origin,callback)=>{
+  if(!origin || allowedOrigins.includes(origin)) callback(null,true);
+  else callback(new HttpError(403,'Origen no permitido'));
+}}));
+app.use(express.json({limit:'32kb'}));
+app.get('/api/health',(_req,res)=>res.json({data:{status:'ok'}}));
+app.use('/api/auth',rateLimit({windowMs:15*60*1000,limit:30,standardHeaders:'draft-7',legacyHeaders:false,message:{message:'Demasiadas solicitudes, inténtelo luego'}}),auth);
+app.use('/api/tasks',tasks);
+app.use('/api/admin',admin);
+app.use(notFound);
+app.use(errorHandler);

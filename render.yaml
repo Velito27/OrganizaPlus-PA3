@@ -1,0 +1,22 @@
+# Ejemplo opcional de despliegue mediante Render Blueprint.
+# Es necesario configurar MongoDB Atlas y las variables privadas en Render.
+services:
+  - type: web
+    name: pa3-organiza-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '4000'
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1h
+      - key: ALLOWED_ORIGINS
+        sync: false
