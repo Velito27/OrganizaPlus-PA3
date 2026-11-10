@@ -2,6 +2,14 @@
 
 Organiza+ permite crear tareas, ponerles una fecha, cambiar su estado y eliminarlas. También tiene registro e inicio de sesión. La pantalla principal está hecha con Angular 16 y hay un segundo panel en React; los dos consultan las mismas tareas mediante el servidor de Express y MongoDB.
 
+## Aplicación en línea
+
+- Angular (principal): https://angular-production-2a00.up.railway.app
+- React (panel secundario): https://react-production-2a1d.up.railway.app
+- API (estado): https://backend-production-fff57.up.railway.app/api/health
+
+Las dos páginas usan la misma API y los datos quedan guardados en MongoDB.
+
 ## Cómo iniciar el proyecto
 
 La forma más sencilla en Windows es con **Docker Desktop**. Hay que tenerlo instalado y abierto antes de empezar. Luego se descomprime la carpeta del proyecto y se abre PowerShell dentro de esa carpeta (donde está `docker-compose.yml`).
